@@ -5,9 +5,6 @@ import * as fs from "fs";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
-export const runtimeConfig = {
-  edge: true,
-};
 
 const interRegPath = join(process.cwd(), "public/roboto.ttf");
 let interReg = fs.readFileSync(interRegPath);
@@ -49,13 +46,11 @@ export async function GET() {
     .resize(1200)
     .toFormat("png")
     .toBuffer();
-  let nr = new NextResponse(img, {
+  new NextResponse(img, {
     status: 200,
     headers: {
       "Content-Type": "image/png",
       "Cache-Control": "max-age=10",
     },
   });
-  console.log({ nr });
-  return nr;
 }
