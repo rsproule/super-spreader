@@ -71,7 +71,7 @@ export async function heal(from: number, to: number[]): Promise<number[]> {
     }
 
     // decrement the heal count
-    await kv.decr(`${HEAL_POINTS_KEY}:${from}`);
+    await kv.incr(`${HEAL_POINTS_KEY}:${from}`);
 
     // increment th heal claim
     await kv.set(`${HEAL_KEY}:${from}`, Date.now().toString());
