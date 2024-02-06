@@ -44,9 +44,22 @@ export function SuperSpreader() {
     getStatus();
   }, [fromFid, toFid, fid]);
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+      }}
+    >
       <h1>Super Spreader</h1>
-
+      <p>
+        Built by <a href="https://warpcast.com/rfs">@rfs</a>. Check out the code
+        on <a href="https://github.com/rsproule/super-spreader">GitHub</a>.
+      </p>
+      <div
+        style={{ borderTop: "1px solid black", width: "60%", margin: "10px" }}
+      ></div>
       <input
         type="number"
         value={fid}
@@ -72,18 +85,48 @@ export function SuperSpreader() {
         placeholder="Enter To FID"
       />
       <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
-        <div style={{ flex: 1, minWidth: "300px" }}>
+        <div
+          style={{
+            flex: 1,
+            minWidth: "400px",
+            border: "1px solid black",
+            padding: "10px",
+            margin: "10px",
+          }}
+        >
+          <h3>Timeline</h3>
           {stats &&
             stats.timeline &&
-            stats.timeline!.map((i: Interaction) => (
-              <p>
-                {<UserDetails fid={i.to_fid} />} was {getActionString(i.action)}{" "}
-                at {new Date(i.timestamp).toLocaleString()} by{" "}
-                {<UserDetails fid={i.from_fid} />}
-              </p>
+            stats.timeline!.map((i: Interaction, index: number) => (
+              <div
+                key={index}
+                style={{
+                  border: "1px solid black",
+                  padding: "2px",
+                  margin: "2px",
+                }}
+              >
+                <p>
+                  {new Date(i.timestamp).toLocaleString()}:{" "}
+                  {<UserDetails fid={i.from_fid} />}{" "}
+                  <em>
+                    <strong>{getActionString(i.action)}</strong>
+                  </em>{" "}
+                  {<UserDetails fid={i.to_fid} />}
+                </p>
+              </div>
             ))}
         </div>
-        <div style={{ flex: 1, minWidth: "300px" }}>
+        <div
+          style={{
+            flex: 1,
+            minWidth: "400px",
+            border: "1px solid black",
+            padding: "10px",
+            margin: "10px",
+          }}
+        >
+          <h3>Stats</h3>
           {stats && stats && stats.counts && (
             <>
               {getCountTable(stats.counts, INFECTION_COUNT_KEY)}
@@ -94,14 +137,14 @@ export function SuperSpreader() {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
 function getCountTable(counts: any, countFilter: string) {
   return (
     <>
-      <h2>{countFilter}</h2>
+      <h4>{countFilter}</h4>
       <table style={{ borderCollapse: "collapse" }}>
         <thead>
           <tr>
@@ -153,7 +196,11 @@ function UserDetails({ fid }: { fid: number }) {
     getUser();
   }, []);
 
-  return user
-    ? user.displayName! + "  @" + user.username! + " (FID: " + fid + ")"
-    : fid;
+  return user ? (
+    <a href={`https://warpcast.com/${user.username}`}>
+      {user.displayName!}-(#{fid})
+    </a>
+  ) : (
+    fid
+  );
 }
