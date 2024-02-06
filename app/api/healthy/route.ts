@@ -21,7 +21,10 @@ export async function POST(req: NextRequest): Promise<Response> {
     } else {
       if (message.button === 1) {
         // try to farm a heal point
-        if (message.liked && message.following && message.recasted) {
+        if (
+          (message.liked && message.following && message.recasted) ||
+          message.interactor.fid === message.raw.action.cast.author.fid
+        ) {
           healPoints = await farmHealPoint(message.interactor.fid);
         }
       } else {
@@ -51,7 +54,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     buttons: [
       {
         label: `Get Status`,
-      }
+      },
     ],
     image: `${NEXT_PUBLIC_URL}/${imageFile}.png`,
     post_url: `${NEXT_PUBLIC_URL}/api/status`,
