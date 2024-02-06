@@ -2,6 +2,7 @@ import { kv } from "@vercel/kv";
 import {
   CURSE_COUNT_KEY,
   CURSE_KEY,
+  HEAL_KEY,
   HEAL_POINTS_KEY,
   HEAL_POINT_CLAIMED_KEY,
   INFECTION_COUNT_KEY,
@@ -70,6 +71,11 @@ export async function heal(from: number, to: number[]): Promise<number[]> {
 
     // decrement the heal count
     await kv.decr(`${HEAL_POINTS_KEY}:${from}`);
+
+    // increment th heal claim
+    await kv.set(`${HEAL_KEY}:${from}`, Date.now().toString());
+
+    await kv.set(`${HEAL_KEY}:${from}:${target}`, Date.now().toString());
 
     // heal the person
     await kv.del(`${INFECTION_KEY}:${target}`);
