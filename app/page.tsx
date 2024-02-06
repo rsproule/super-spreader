@@ -8,14 +8,14 @@ const frameMetadata = getFrameMetadata({
       label: 'status',
     },
     {
-      label: 'spread',
+      label: 'infect',
     },
   ],
-  image: `${NEXT_PUBLIC_URL}/park-1.png`,
+  image: `${NEXT_PUBLIC_URL}/api/images/home`,
   input: {
-    text: 'Spread to fids or fnames (comma separated)',
+    text: 'infect (fids or fnames)',
   },
-  post_url: `${NEXT_PUBLIC_URL}/api/frame`,
+  post_url: `${NEXT_PUBLIC_URL}/api/spread`,
 });
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'SuperSpreader',
     description: 'A virtual virus has broken our on farcaster!',
-    images: [`${NEXT_PUBLIC_URL}/park-1.png`],
+    images: [`${NEXT_PUBLIC_URL}/api/images/home`],
   },
   other: {
     ...frameMetadata,
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
-      <h1>zizzamia.xyz</h1>
+      <h1>Welcome to SuperSpreader</h1>
     </>
   );
 }
