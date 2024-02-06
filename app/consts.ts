@@ -10,5 +10,5 @@ export const MAX_CURSES = 10;
 export const HEAL_KEY = "healed";
 export const HEAL_COUNT_KEY = "heal_count";
 export const HEAL_POINT_CLAIMED_KEY = "heal_points_count";
-export const HEAL_POINT_CLAIMED_KEY_TIME = "heal_points_count";
+export const HEAL_POINT_CLAIMED_KEY_TIME = "heal_points_time";
 export const HEAL_POINT_TIME = 24 * 60 * 60 * 1000;
