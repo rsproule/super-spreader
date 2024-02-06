@@ -9,7 +9,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   // authenticate the user
   let message = await extractUser(req);
   console.log("message", message);
-  let infected: number[] = [];
+  let cursed: number[] = [];
   if (!message || !message.valid) {
     console.log("Unauthorized", { status: 401 });
   } else {
@@ -21,6 +21,7 @@ export async function POST(req: NextRequest): Promise<Response> {
         .split(",")
         .map((input) => {
           let fid = parseInt(input.trim());
+          console.log("FID", fid);
           // TODO: try to parse if they provide fname
           // if (isNaN(fid)) {
           //   // if input is not a number, try to parse it as fname
@@ -30,10 +31,11 @@ export async function POST(req: NextRequest): Promise<Response> {
         })
         .filter((fid) => !isNaN(fid) && fid !== message!.interactor.fid)
         .slice(0, 5);
-      infected = await curse(message.interactor.fid, targets);
+
+      cursed = await curse(message.interactor.fid, targets);
     }
   }
-  console.log("infected", infected);
+  console.log("cursed", cursed);
 
   // at the end we might want to go to a new page or just stay here
   let frame = getFrameHtmlResponse({
@@ -42,7 +44,7 @@ export async function POST(req: NextRequest): Promise<Response> {
         label: `Get Status`,
       },
     ],
-    image: `${NEXT_PUBLIC_URL}/${infected.length > 0 ? "infect" : "infect-failed"}.png`,
+    image: `${NEXT_PUBLIC_URL}/${cursed.length > 0 ? "curse" : "curse-failed"}.png`,
     post_url: `${NEXT_PUBLIC_URL}/api/status`,
   });
 

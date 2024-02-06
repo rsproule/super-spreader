@@ -13,20 +13,13 @@ function getButtons(
 ): [FrameButtonMetadata, ...FrameButtonMetadata[]] | undefined {
   switch (status) {
     case Status.Infected:
-      return [
-        { label: "Infect!" },
-        { label: "Full page", action: "post_redirect" },
-      ];
+      return [{ label: "Infect!" }];
     case Status.Dead:
-      return [
-        { label: "Divine Power!" },
-        { label: "Full page", action: "post_redirect" },
-      ];
+      return [{ label: "Curse!" }];
     case Status.Healthy:
       return [
         { label: "Claim HP! (follow, like, recast) 1/day" },
         { label: "Rescue!" },
-        { label: "Full page", action: "post_redirect" },
       ];
     default:
       return undefined;
@@ -39,6 +32,8 @@ function getInputString(status: Status): FrameInputMetadata | undefined {
       return { text: "fid(s) to infect" };
     case Status.Healthy:
       return { text: "fid(s) to rescue" };
+    case Status.Dead:
+      return { text: "fid(s) to curse" };
     default:
       return undefined;
   }
@@ -66,4 +61,12 @@ export async function POST(req: NextRequest): Promise<Response> {
     headers: { "Content-Type": "text/html" },
   });
 }
-export const GET = POST;
+
+export async function GET(req: NextRequest): Promise<Response> {
+    console.log("GET status");
+  const { searchParams } = req.nextUrl;
+  const fid = searchParams.get("fid");
+
+  const status = await getStatus(parseInt(fid!));
+  return NextResponse.json({ status: status }, { status: 200 });
+}

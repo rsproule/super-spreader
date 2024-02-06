@@ -6,7 +6,9 @@ import {
   HEAL_POINT_CLAIMED_KEY,
   INFECTION_COUNT_KEY,
   INFECTION_KEY,
+  MAX_CURSES,
   MAX_INFECTIONS,
+  oneDayInMilliseconds,
 } from "../../consts";
 
 export async function infect(from: number, to: number[]): Promise<number[]> {
@@ -52,9 +54,17 @@ export async function heal(from: number, to: number[]): Promise<number[]> {
       console.log("Already healthy", targetInfected);
       continue;
     }
+    if (
+      targetInfected &&
+      Date.now() - Number(targetInfected) > oneDayInMilliseconds
+    ) {
+      console.log("Already dead", targetInfected);
+      continue;
+    }
 
     let totalHeals = await kv.get(`${HEAL_POINTS_KEY}`);
     if (totalHeals && Number(totalHeals) < 0) {
+      console.log("No HPs to heal", targetInfected);
       break;
     }
 
@@ -74,23 +84,22 @@ export async function curse(from: number, to: number[]): Promise<number[]> {
   let cursed: number[] = [];
   for (let target of to) {
     let targetInfected = await kv.get(`${CURSE_KEY}:${target}`);
-    if (!targetInfected) {
-      console.log("Already healthy", targetInfected);
+    if (targetInfected) {
+      console.log("Already cursed", targetInfected);
       continue;
     }
-    // how many people have they infected
-    await kv.incr(`${CURSE_COUNT_KEY}:${from}`);
-
-    let totalHeals = await kv.get(`heal_count`);
-    if (totalHeals && Number(totalHeals) < 0) {
+    // how many people have they cursed
+    let curse_count = await kv.get(`${CURSE_COUNT_KEY}:${from}`);
+    if (curse_count && Number(curse_count) > MAX_CURSES) {
       break;
     }
+    await kv.incr(`${CURSE_COUNT_KEY}:${from}`);
 
-    // decrement the global heal count
-    await kv.decr(`heal_count`);
+    // set the target cursed
+    await kv.set(`${CURSE_KEY}:${target}`, Date.now().toString());
 
-    // when was the person infected
-    await kv.del(`${INFECTION_KEY}:${target}`);
+    // set cursed by from
+    await kv.set(`${CURSE_KEY}:${from}:${target}`, Date.now().toString());
 
     cursed.push(target);
   }
