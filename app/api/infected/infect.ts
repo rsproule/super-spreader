@@ -67,7 +67,7 @@ export async function heal(from: number, to: number[]): Promise<number[]> {
     let totalHeals = await kv.get(`${HEAL_POINTS_KEY}:${from}`);
     if (totalHeals && Number(totalHeals) < 0) {
       console.log("No HPs to heal", targetInfected);
-      break;j
+      break;
     }
 
     // decrement the heal count
