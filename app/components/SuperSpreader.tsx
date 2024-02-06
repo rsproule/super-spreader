@@ -1,7 +1,6 @@
 "use client";
-import { NeynarAPIClient } from "@neynar/nodejs-sdk";
 import { useState, useEffect } from "react";
-import { Infection, Interaction } from "../api/stats/route";
+import { Interaction } from "../api/stats/route";
 import {
   INFECTION_KEY,
   CURSE_KEY,
@@ -11,10 +10,9 @@ import {
   HEAL_POINT_CLAIMED_KEY,
   HEAL_POINTS_KEY,
 } from "../consts";
-import { getStatus } from "../api/status/getStatus";
 
 export function SuperSpreader() {
-  const [stats, setStats] = useState();
+  const [stats, setStats] = useState<any>();
   const [toFid, setToFid] = useState<number | undefined>();
   const [fid, setFid] = useState<number | undefined>();
   const [fromFid, setFromFid] = useState<number | undefined>();
@@ -56,7 +54,7 @@ export function SuperSpreader() {
         placeholder="Search FID for status"
       />
       <div>Status: {status}</div>
-      <hr/>
+      <hr />
 
       <div>Enter FID to do some filtering of the timeline</div>
       <input
@@ -113,8 +111,8 @@ function getCountTable(counts: any, countFilter: string) {
         </thead>
         <tbody>
           {counts
-            .filter((count) => count.action === countFilter)
-            .map((count) => (
+            .filter((count: any) => count.action === countFilter)
+            .map((count: any) => (
               <tr key={count.fid}>
                 <td style={{ border: "1px solid black", padding: "5px" }}>
                   <UserDetails fid={Number(count.fid)} />
@@ -142,7 +140,7 @@ function getActionString(action: string) {
 }
 
 function UserDetails({ fid }: { fid: number }) {
-  const [user, setUser] = useState();
+  const [user, setUser] = useState<any>();
   useEffect(() => {
     const getUser = async () => {
       let res = await fetch("/api/user?fid=" + fid, {

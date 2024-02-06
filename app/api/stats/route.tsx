@@ -67,14 +67,8 @@ async function getTimeline(
       } as Interaction;
     })
     .filter((interaction) => interaction !== null)
-    .sort((a, b) => b.timestamp - a.timestamp);
+    .sort((a, b) => b!.timestamp - a!.timestamp);
 }
-
-// export interface Infection {
-//   infected_fid: number;
-//   infector_fid: number;
-//   timestamp: number;
-// }
 
 export interface Interaction {
   from_fid: number;
