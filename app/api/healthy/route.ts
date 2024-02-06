@@ -47,7 +47,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       ? "heal"
       : "heal-failed"
     : healPoints > 0
-      ? "hp-farmed"
+      ? "hp-farm"
       : "hp-farm-failed";
   // at the end we might want to go to a new page or just stay here
   let frame = getFrameHtmlResponse({
@@ -60,7 +60,6 @@ export async function POST(req: NextRequest): Promise<Response> {
     post_url: `${NEXT_PUBLIC_URL}/api/status`,
   });
 
-  console.log(frame);
   return new NextResponse(frame, {
     status: 200,
     headers: { "Content-Type": "text/html" },
