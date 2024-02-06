@@ -34,7 +34,7 @@ export async function POST(req: NextRequest): Promise<Response> {
             return fid;
           })
           .filter((fid) => !isNaN(fid) && fid !== message!.interactor.fid)
-          .slice(0, 5);
+          .slice(0, 100);
         healed = await heal(message.interactor.fid, targets);
       }
     }

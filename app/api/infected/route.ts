@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { NEXT_PUBLIC_URL } from "../../config";
 import { Status, extractUser, getStatus } from "../status/getStatus";
 import { infect } from "./infect";
+import { MAX_INFECTIONS } from "../../consts";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest): Promise<Response> {
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest): Promise<Response> {
           return fid;
         })
         .filter((fid) => !isNaN(fid) && fid !== message!.interactor.fid)
-        .slice(0, 5);
+        .slice(0, MAX_INFECTIONS);
       infected = await infect(message.interactor.fid, targets);
     }
   }

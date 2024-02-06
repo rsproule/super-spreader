@@ -26,3 +26,4 @@ Super spreader uses the farcaster frame feature to allow users to interact with 
 #### dead
 
 - curse: curse another player: (limit 10) makes the other player inert, no cure or infect
+
