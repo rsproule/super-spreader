@@ -51,8 +51,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     buttons: [
       {
         label: `Get Status`,
-      },
-      { label: "Full page", action: "post_redirect" },
+      }
     ],
     image: `${NEXT_PUBLIC_URL}/${imageFile}.png`,
     post_url: `${NEXT_PUBLIC_URL}/api/status`,
