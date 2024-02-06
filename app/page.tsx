@@ -8,7 +8,6 @@ const frameMetadata = getFrameMetadata({
       label: "Get My Status",
     },
   ],
-  // image: `${NEXT_PUBLIC_URL}/api/image?text=Super%20Spreader`,
   image: `${NEXT_PUBLIC_URL}/main.png`,
   post_url: `${NEXT_PUBLIC_URL}/api/status`,
 });

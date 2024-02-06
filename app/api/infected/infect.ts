@@ -3,6 +3,7 @@ import {
   CURSE_COUNT_KEY,
   CURSE_KEY,
   HEAL_POINTS_KEY,
+  HEAL_POINT_CLAIMED_KEY,
   INFECTION_KEY,
   MAX_INFECTIONS,
 } from "../../consts";
@@ -50,16 +51,14 @@ export async function heal(from: number, to: number[]): Promise<number[]> {
       console.log("Already healthy", targetInfected);
       continue;
     }
-    // how many people have they infected
-    await kv.incr(`${HEAL_POINTS_KEY}:${from}`);
 
     let totalHeals = await kv.get(`${HEAL_POINTS_KEY}`);
     if (totalHeals && Number(totalHeals) < 0) {
       break;
     }
 
-    // decrement the global heal count
-    await kv.decr(`${HEAL_POINTS_KEY}`);
+    // decrement the heal count
+    await kv.decr(`${HEAL_POINTS_KEY}:${from}`);
 
     // heal the person
     await kv.del(`${INFECTION_KEY}:${target}`);
@@ -105,4 +104,16 @@ export async function getInfectionTime(
   // this one is indexed because we need it in hot path
   const res: string | null = await kv.get(`${INFECTION_KEY}:${fid}`);
   return res ? Number(res) : undefined;
+}
+
+export async function farmHealPoint(fid: number): Promise<number> {
+  let lastClaimed = await kv.get(`${HEAL_POINT_CLAIMED_KEY}:${fid}`);
+  if (lastClaimed) {
+    let lastClaimedTime = Number(lastClaimed);
+    if (Date.now() - lastClaimedTime < 24 * 60 * 60 * 1000) {
+      console.log("Can't claim yet", lastClaimedTime);
+      return -1;
+    }
+  }
+  return await kv.incr(`${HEAL_POINTS_KEY}:${fid}`);
 }

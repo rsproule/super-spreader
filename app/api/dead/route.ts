@@ -28,7 +28,7 @@ export async function POST(req: NextRequest): Promise<Response> {
           // }
           return fid;
         })
-        .filter((fid) => !isNaN(fid) && fid !== message.interactor.fid)
+        .filter((fid) => !isNaN(fid) && fid !== message!.interactor.fid)
         .slice(0, 5);
       infected = await curse(message.interactor.fid, targets);
     }

@@ -9,3 +9,4 @@ export const CURSE_COUNT_KEY = "curse_count";
 export const MAX_CURSES = 10;
 
 export const HEAL_POINTS_KEY = "heal_points";
+export const HEAL_POINT_CLAIMED_KEY = "heal_points_claimed";

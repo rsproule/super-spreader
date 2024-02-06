@@ -22,11 +22,10 @@ export type Infection = {
 
 export async function getStatus(fid: number): Promise<Status> {
   let timestamp = await getInfectionTime(fid);
+  const currentTime = Date.now();
   if (!timestamp) {
     return Status.Healthy;
   }
-  const currentTime = Date.now();
-  console.log("Current time", currentTime);
   if (currentTime - Number(timestamp) > oneDayInMilliseconds) {
     return Status.Dead;
   } else {

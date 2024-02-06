@@ -5,7 +5,7 @@ import {
   FrameButtonMetadata,
   FrameInputMetadata,
 } from "@coinbase/onchainkit/dist/types/core/types";
-import { Status } from "./getStatus";
+import { Status, extractUser, getStatus } from "./getStatus";
 export const dynamic = "force-dynamic";
 
 function getButtons(
@@ -17,7 +17,10 @@ function getButtons(
     case Status.Dead:
       return [{ label: "Divine Power!" }];
     case Status.Healthy:
-      return [{ label: "Help the Cure! (must follow, like)" }];
+      return [
+        { label: "Farm Health Point! (must follow, like, recast) 1/daily" },
+        { label: "Rescue!" },
+      ];
     default:
       return undefined;
   }
@@ -34,7 +37,11 @@ function getInputString(status: Status): FrameInputMetadata | undefined {
   }
 }
 export async function POST(req: NextRequest): Promise<Response> {
-  let status: Status = Status.Infected;
+  let message = await extractUser(req);
+  if (!message || !message.valid) {
+    return new NextResponse("Bad Request", { status: 400 });
+  }
+  let status: Status = await getStatus(message.interactor.fid);
 
   let frame = getFrameHtmlResponse({
     buttons: getButtons(status),
@@ -42,8 +49,6 @@ export async function POST(req: NextRequest): Promise<Response> {
     image: `${NEXT_PUBLIC_URL}/${status}.png`,
     post_url: `${NEXT_PUBLIC_URL}/api/${status}`,
   });
-
-  console.log(frame);
   return new NextResponse(frame, {
     status: 200,
     headers: { "Content-Type": "text/html" },
