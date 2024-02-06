@@ -131,5 +131,6 @@ export async function farmHealPoint(fid: number): Promise<number> {
       return -1;
     }
   }
+  await kv.set(`${HEAL_POINT_CLAIMED_KEY_TIME}:${fid}`, Date.now().toString());
   return await kv.incr(`${HEAL_POINT_CLAIMED_KEY}:${fid}`);
 }
