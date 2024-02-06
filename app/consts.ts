@@ -1,6 +1,6 @@
 export const INFECTION_KEY = "infection";
 export const INFECTION_COUNT_KEY = "infect_count";
-export const MAX_INFECTIONS = 10;
+export const MAX_INFECTIONS = 50;
 export const DEATH_TIME = 14 * 60 * 60 * 1000;
 
 export const CURSE_KEY = "cursed";
