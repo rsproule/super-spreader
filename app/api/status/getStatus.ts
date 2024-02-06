@@ -5,7 +5,7 @@ import {
   getFrameMessage,
 } from "@coinbase/onchainkit";
 import { NextRequest } from "next/server";
-import { INFECTION_KEY, oneDayInMilliseconds } from "../../consts";
+import { oneDayInMilliseconds } from "../../consts";
 import { getInfectionTime } from "../infected/infect";
 
 export enum Status {
@@ -14,18 +14,13 @@ export enum Status {
   Healthy = "healthy",
 }
 
-export type Infection = {
-  infected_fid: number;
-  infector_fid: number;
-  timestamp: number;
-};
-
 export async function getStatus(fid: number): Promise<Status> {
   let timestamp = await getInfectionTime(fid);
-  const currentTime = Date.now();
   if (!timestamp) {
     return Status.Healthy;
   }
+  const currentTime = Date.now();
+  console.log("Current time", currentTime);
   if (currentTime - Number(timestamp) > oneDayInMilliseconds) {
     return Status.Dead;
   } else {
@@ -33,6 +28,25 @@ export async function getStatus(fid: number): Promise<Status> {
   }
 }
 
+// async function getInfectionTime(fid: number): Promise<Infection | undefined> {
+//   // this one is indexed because we need it in hot path
+//   const res: string | null = await kv.get(`${INFECTION_KEY}:${fid}`);
+//   return res ? JSON.parse(res) : undefined;
+// }
+
+// async function getAllInfections(fid: number): Promise<Infection[]> {
+//   let cursor = 0;
+//   let infections = [];
+//   do {
+//     const res = await kv.scan(cursor, {
+//       match: `infections:${fid}:*`,
+//       count: 2500,
+//     });
+//     cursor = res[0];
+//     infections.push(...res[1].map((k) => JSON.parse(k)));
+//   } while (cursor !== 0);
+//   return infections;
+// }
 
 export async function extractUser(
   req: NextRequest

@@ -13,13 +13,20 @@ function getButtons(
 ): [FrameButtonMetadata, ...FrameButtonMetadata[]] | undefined {
   switch (status) {
     case Status.Infected:
-      return [{ label: "Infect!" }];
+      return [
+        { label: "Infect!" },
+        { label: "Full page", action: "post_redirect" },
+      ];
     case Status.Dead:
-      return [{ label: "Divine Power!" }];
+      return [
+        { label: "Divine Power!" },
+        { label: "Full page", action: "post_redirect" },
+      ];
     case Status.Healthy:
       return [
-        { label: "Farm Health Point! (must follow, like, recast) 1/daily" },
+        { label: "Claim HP! (follow, like, recast) 1/day" },
         { label: "Rescue!" },
+        { label: "Full page", action: "post_redirect" },
       ];
     default:
       return undefined;
@@ -40,6 +47,11 @@ export async function POST(req: NextRequest): Promise<Response> {
   let message = await extractUser(req);
   if (!message || !message.valid) {
     return new NextResponse("Bad Request", { status: 400 });
+  }
+  if (message.button === 2) {
+    return NextResponse.redirect(`${NEXT_PUBLIC_URL}`, {
+      status: 302,
+    });
   }
   let status: Status = await getStatus(message.interactor.fid);
 

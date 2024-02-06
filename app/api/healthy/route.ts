@@ -11,6 +11,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   let healed: number[] = [];
   let healPoints: number = 0;
   let isHealth: boolean = false;
+
   if (!message || !message.valid) {
     console.log("Unauthorized", { status: 401 });
   } else {
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     if (status !== Status.Healthy) {
       console.log("Invalid request, not healthy", { status: 400 });
     } else {
-      if (message.button === 0) {
+      if (message.button === 1) {
         // try to farm a heal point
         if (message.liked && message.following && message.recasted) {
           healPoints = await farmHealPoint(message.interactor.fid);
@@ -51,6 +52,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       {
         label: `Get Status`,
       },
+      { label: "Full page", action: "post_redirect" },
     ],
     image: `${NEXT_PUBLIC_URL}/${imageFile}.png`,
     post_url: `${NEXT_PUBLIC_URL}/api/status`,

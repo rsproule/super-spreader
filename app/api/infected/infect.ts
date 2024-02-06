@@ -4,6 +4,7 @@ import {
   CURSE_KEY,
   HEAL_POINTS_KEY,
   HEAL_POINT_CLAIMED_KEY,
+  INFECTION_COUNT_KEY,
   INFECTION_KEY,
   MAX_INFECTIONS,
 } from "../../consts";
@@ -22,7 +23,7 @@ export async function infect(from: number, to: number[]): Promise<number[]> {
       continue;
     }
     // how many people have they infected
-    let infectedCount = await kv.get(`infect_count:${from}`);
+    let infectedCount = await kv.get(`${INFECTION_COUNT_KEY}:${from}`);
     await kv.incr(`infect_count:${from}`);
     if (infectedCount && Number(infectedCount) > MAX_INFECTIONS) {
       break;

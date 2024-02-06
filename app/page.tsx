@@ -1,12 +1,14 @@
 import { getFrameMetadata } from "@coinbase/onchainkit";
 import type { Metadata } from "next";
 import { NEXT_PUBLIC_URL } from "./config";
+import { SuperSpreader } from "./components/SuperSpreader";
 
 const frameMetadata = getFrameMetadata({
   buttons: [
     {
       label: "Get My Status",
     },
+    { label: "Full page", action: "post_redirect" },
   ],
   image: `${NEXT_PUBLIC_URL}/main.png`,
   post_url: `${NEXT_PUBLIC_URL}/api/status`,
@@ -27,8 +29,6 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <>
-      <h1>Welcome to SuperSpreader</h1>
-    </>
+    <SuperSpreader/>
   );
 }
