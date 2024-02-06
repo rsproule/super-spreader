@@ -8,7 +8,7 @@ import {
   INFECTION_COUNT_KEY,
   CURSE_COUNT_KEY,
   HEAL_POINT_CLAIMED_KEY,
-  HEAL_POINTS_KEY,
+  HEAL_COUNT_KEY,
 } from "../consts";
 
 export function SuperSpreader() {
@@ -131,7 +131,7 @@ export function SuperSpreader() {
             <>
               {getCountTable(stats.counts, INFECTION_COUNT_KEY)}
               {getCountTable(stats.counts, CURSE_COUNT_KEY)}
-              {getCountTable(stats.counts, HEAL_POINTS_KEY)}
+              {getCountTable(stats.counts, HEAL_COUNT_KEY)}
               {getCountTable(stats.counts, HEAL_POINT_CLAIMED_KEY)}
             </>
           )}
@@ -161,7 +161,7 @@ function getCountTable(counts: any, countFilter: string) {
                   <UserDetails fid={Number(count.fid)} />
                 </td>
                 <td style={{ border: "1px solid black", padding: "5px" }}>
-                  {count.count}
+                  {Math.abs(count.count)}
                 </td>
               </tr>
             ))}
