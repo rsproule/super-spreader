@@ -23,6 +23,9 @@ async function getCounts(actionType: string | null, fromFid: string | null) {
     cursor = res[0];
     countKeys.push(...res[1]);
   } while (cursor !== 0);
+  if (countKeys.length === 0) {
+    return [];
+  }
   let counts = await kv.mget(countKeys);
   return countKeys.map((key, i) => {
     return {
