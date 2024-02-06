@@ -5,7 +5,6 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const text = searchParams.get("text");
 
-  console.log({ req })
   return new ImageResponse(
     (
       <div
@@ -19,11 +18,15 @@ export async function GET(req: NextRequest) {
           backgroundColor: "white",
           padding: 50,
           lineHeight: 1.2,
-          fontSize: 24,
+          fontSize: 14,
           color: "black",
         }}
       >
-        <p>{text}</p>
+        <h1>Super Spreader</h1>
+        <p>A virtual virus has broken out on Farcaster!</p>
+        <p>Vigor vindicates, vulnerability vanishes.</p>
+        <p>Vae Victus</p>
+        {/* <p>{text}</p> */}
       </div>
     ),
     {
