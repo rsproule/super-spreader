@@ -11,7 +11,7 @@ const frameMetadata = getFrameMetadata({
       label: 'infect',
     },
   ],
-  image: `${NEXT_PUBLIC_URL}/api/images/home`,
+  image: `${NEXT_PUBLIC_URL}/api/image?text=Super%20Spreader`,
   input: {
     text: 'infect (fids or fnames)',
   },
@@ -20,11 +20,12 @@ const frameMetadata = getFrameMetadata({
 
 export const metadata: Metadata = {
   title: 'SuperSpreader',
+  // metadataBase: new URL(`${NEXT_PUBLIC_URL}`),
   description: 'A virtual virus has broken our on farcaster!',
   openGraph: {
     title: 'SuperSpreader',
     description: 'A virtual virus has broken our on farcaster!',
-    images: [`${NEXT_PUBLIC_URL}/api/images/home`],
+    images: [`${NEXT_PUBLIC_URL}/api/image?text=SuperSpreader`],
   },
   other: {
     ...frameMetadata,

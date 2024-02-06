@@ -1,19 +1,18 @@
+import { NextResponse } from "next/server";
+// import { kv } from "@vercel/kv";
 import satori from "satori";
 import sharp from "sharp";
 import { join } from "path";
 import * as fs from "fs";
-import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
-export const runtimeConfig = {
-  edge: true,
-};
 
 const interRegPath = join(process.cwd(), "public/roboto.ttf");
 let interReg = fs.readFileSync(interRegPath);
 
 export async function GET() {
-  console.log("spread page");
+//   const flag = (await kv.get("flag")) as string;
+//   const yoinks = (await kv.get("yoinks")) as string;
   const svg = await satori(
     <div
       style={{
@@ -28,9 +27,21 @@ export async function GET() {
         lineHeight: 1.2,
         fontSize: 24,
         color: "black",
+        marginBottom: 12,
       }}
     >
-      this is the spread
+      {/* <h1>{flag}</h1> */}
+      <div style={{ display: "flex" }}>
+        Has the flag{" "}
+        <img
+          width="32"
+          height="32"
+          src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/15.0.3/72x72/1f6a9.png"
+        />
+      </div>
+      <div style={{ display: "flex", marginTop: "12" }}>
+        The flag has been yoinked 77 times.
+      </div>
     </div>,
     {
       width: 600,
@@ -45,17 +56,16 @@ export async function GET() {
       ],
     }
   );
+
   const img = await sharp(Buffer.from(svg))
     .resize(1200)
     .toFormat("png")
     .toBuffer();
-  let nr = new NextResponse(img, {
+  return new NextResponse(img, {
     status: 200,
     headers: {
       "Content-Type": "image/png",
       "Cache-Control": "max-age=10",
     },
   });
-  console.log({ nr });
-  return nr;
 }

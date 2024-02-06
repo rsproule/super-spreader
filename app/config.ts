@@ -1,1 +1,1 @@
-export const NEXT_PUBLIC_URL = "https://2132-185-211-32-217.ngrok-free.app";
+export const NEXT_PUBLIC_URL = "https://super-spreader-git-master-ryansproulepersonal.vercel.app/";

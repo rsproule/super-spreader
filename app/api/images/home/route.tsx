@@ -25,7 +25,7 @@ export async function GET(): Promise<Response> {
         color: "black",
       }}
     >
-      this is the home pages
+      this is the home page
     </div>,
     {
       width: 600,
@@ -52,5 +52,3 @@ export async function GET(): Promise<Response> {
     },
   });
 }
-
-export const dynamic = "force-dynamic";
