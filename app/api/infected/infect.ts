@@ -3,7 +3,7 @@ import {
   CURSE_COUNT_KEY,
   CURSE_KEY,
   HEAL_KEY,
-  HEAL_POINTS_KEY,
+  HEAL_COUNT_KEY,
   HEAL_POINT_CLAIMED_KEY,
   HEAL_POINT_TIME,
   INFECTION_COUNT_KEY,
@@ -11,6 +11,7 @@ import {
   MAX_CURSES,
   MAX_INFECTIONS,
   DEATH_TIME,
+  HEAL_POINT_CLAIMED_KEY_TIME,
 } from "../../consts";
 
 export async function infect(from: number, to: number[]): Promise<number[]> {
@@ -56,22 +57,20 @@ export async function heal(from: number, to: number[]): Promise<number[]> {
       console.log("Already healthy", targetInfected);
       continue;
     }
-    if (
-      targetInfected &&
-      Date.now() - Number(targetInfected) > DEATH_TIME
-    ) {
+    if (targetInfected && Date.now() - Number(targetInfected) > DEATH_TIME) {
       console.log("Already dead", targetInfected);
       continue;
     }
 
-    let totalHeals = await kv.get(`${HEAL_POINTS_KEY}:${from}`);
-    if (totalHeals && Number(totalHeals) < 0) {
+    let hps = await kv.get(`${HEAL_POINT_CLAIMED_KEY}:${from}`);
+    if (hps && Number(hps) <= 0) {
       console.log("No HPs to heal", targetInfected);
       break;
     }
 
     // decrement the heal count
-    await kv.decr(`${HEAL_POINTS_KEY}:${from}`);
+    await kv.decr(`${HEAL_POINT_CLAIMED_KEY}:${from}`);
+    await kv.incr(`${HEAL_COUNT_KEY}:${from}`);
 
     // increment th heal claim
     await kv.set(`${HEAL_KEY}:${from}`, Date.now().toString());
@@ -124,7 +123,7 @@ export async function getInfectionTime(
 }
 
 export async function farmHealPoint(fid: number): Promise<number> {
-  let lastClaimed = await kv.get(`${HEAL_POINT_CLAIMED_KEY}:${fid}`);
+  let lastClaimed = await kv.get(`${HEAL_POINT_CLAIMED_KEY_TIME}:${fid}`);
   if (lastClaimed) {
     let lastClaimedTime = Number(lastClaimed);
     if (Date.now() - lastClaimedTime < HEAL_POINT_TIME) {
@@ -132,5 +131,5 @@ export async function farmHealPoint(fid: number): Promise<number> {
       return -1;
     }
   }
-  return await kv.incr(`${HEAL_POINTS_KEY}:${fid}`);
+  return await kv.incr(`${HEAL_POINT_CLAIMED_KEY}:${fid}`);
 }

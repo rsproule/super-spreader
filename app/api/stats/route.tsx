@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
   const action = searchParams.get("action");
   let timeline = await getTimeline(action, fromFid, toFid);
   let counts = await getCounts(action, fromFid);
+  console.log({ timeline, counts })
   return NextResponse.json({ timeline, counts });
 }
 
