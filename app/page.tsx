@@ -8,7 +8,7 @@ const frameMetadata = getFrameMetadata({
     {
       label: "Get My Status",
     },
-    { label: "Full page", action: "post_redirect" },
+    { label: "Stats", action: "post_redirect" },
   ],
   image: `${NEXT_PUBLIC_URL}/main.png`,
   post_url: `${NEXT_PUBLIC_URL}/api/status`,
