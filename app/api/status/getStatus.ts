@@ -5,8 +5,8 @@ import {
   getFrameMessage,
 } from "@coinbase/onchainkit";
 import { NextRequest } from "next/server";
-import { oneDayInMilliseconds } from "../../consts";
 import { getInfectionTime } from "../infected/infect";
+import { DEATH_TIME } from "../../consts";
 
 export enum Status {
   Infected = "infected",
@@ -21,7 +21,7 @@ export async function getStatus(fid: number): Promise<Status> {
   }
   const currentTime = Date.now();
   console.log("Current time", currentTime);
-  if (currentTime - Number(timestamp) > oneDayInMilliseconds) {
+  if (currentTime - Number(timestamp) > DEATH_TIME) {
     return Status.Dead;
   } else {
     return Status.Infected;

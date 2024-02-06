@@ -1,5 +1,3 @@
-export const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-
 export const INFECTION_KEY = "infection";
 export const INFECTION_COUNT_KEY = "infect_count";
 export const MAX_INFECTIONS = 10;

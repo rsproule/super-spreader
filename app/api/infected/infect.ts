@@ -5,11 +5,12 @@ import {
   HEAL_KEY,
   HEAL_POINTS_KEY,
   HEAL_POINT_CLAIMED_KEY,
+  HEAL_POINT_TIME,
   INFECTION_COUNT_KEY,
   INFECTION_KEY,
   MAX_CURSES,
   MAX_INFECTIONS,
-  oneDayInMilliseconds,
+  DEATH_TIME,
 } from "../../consts";
 
 export async function infect(from: number, to: number[]): Promise<number[]> {
@@ -57,7 +58,7 @@ export async function heal(from: number, to: number[]): Promise<number[]> {
     }
     if (
       targetInfected &&
-      Date.now() - Number(targetInfected) > oneDayInMilliseconds
+      Date.now() - Number(targetInfected) > DEATH_TIME
     ) {
       console.log("Already dead", targetInfected);
       continue;
@@ -126,7 +127,7 @@ export async function farmHealPoint(fid: number): Promise<number> {
   let lastClaimed = await kv.get(`${HEAL_POINT_CLAIMED_KEY}:${fid}`);
   if (lastClaimed) {
     let lastClaimedTime = Number(lastClaimed);
-    if (Date.now() - lastClaimedTime < 24 * 60 * 60 * 1000) {
+    if (Date.now() - lastClaimedTime < HEAL_POINT_TIME) {
       console.log("Can't claim yet", lastClaimedTime);
       return -1;
     }
