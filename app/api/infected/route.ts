@@ -38,7 +38,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     image: `${NEXT_PUBLIC_URL}/${image}.png`,
     post_url:
       infected && infected.length > 0
-        ? `${NEXT_PUBLIC_URL}/api/status?fids=${infected.join(",")}`
+        ? `${NEXT_PUBLIC_URL}/api/status?fids=${encodeURIComponent(infected.join(","))}`
         : `${NEXT_PUBLIC_URL}/api/status`,
   });
 
