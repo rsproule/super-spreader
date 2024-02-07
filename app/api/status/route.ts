@@ -1,11 +1,13 @@
 import { getFrameHtmlResponse } from "@coinbase/onchainkit";
-import { NextRequest, NextResponse } from "next/server";
-import { NEXT_PUBLIC_URL } from "../../config";
 import {
   FrameButtonMetadata,
   FrameInputMetadata,
 } from "@coinbase/onchainkit/dist/types/core/types";
+import { NextRequest, NextResponse } from "next/server";
+import { NEXT_PUBLIC_URL } from "../../config";
 import { Status, extractUser, getStatus } from "./getStatus";
+import { getTweetFromFidsString } from "../../utils";
+import { NeynarAPIClient } from "@neynar/nodejs-sdk";
 export const dynamic = "force-dynamic";
 
 function getButtons(
@@ -13,7 +15,10 @@ function getButtons(
 ): [FrameButtonMetadata, ...FrameButtonMetadata[]] | undefined {
   switch (status) {
     case Status.Infected:
-      return [{ label: "Infect!" }];
+      return [
+        { label: "Infect these users ⬆️" },
+        { label: "Infect 50 followers" },
+      ];
     case Status.Dead:
       return [{ label: "Curse!" }];
     case Status.Healthy:
@@ -29,16 +34,19 @@ function getButtons(
 function getInputString(status: Status): FrameInputMetadata | undefined {
   switch (status) {
     case Status.Infected:
-      return { text: "fid(s) to infect" };
+      return { text: "fid(s) or usernames to infect" };
     case Status.Healthy:
-      return { text: "fid(s) to rescue" };
+      return { text: "fid(s) or usernames to rescue" };
     case Status.Dead:
-      return { text: "fid(s) to curse" };
+      return { text: "fid(s) or usernames to curse" };
     default:
       return undefined;
   }
 }
 export async function POST(req: NextRequest): Promise<Response> {
+  const client = new NeynarAPIClient(process.env.NEYNAR_KEY!);
+  const { searchParams } = req.nextUrl;
+  const fids = searchParams.get("fids");
   let message = await extractUser(req);
   if (!message || !message.valid) {
     return new NextResponse("Bad Request", { status: 400 });
@@ -47,6 +55,15 @@ export async function POST(req: NextRequest): Promise<Response> {
     return NextResponse.redirect(`${NEXT_PUBLIC_URL}`, {
       status: 302,
     });
+  }
+  if (message.button === 3) {
+    let tweet = await getTweetFromFidsString(client, fids!, "infected");
+    return NextResponse.redirect(
+      `https://warpcast.com/~/compose?text=${encodeURIComponent(tweet)}`,
+      {
+        status: 302,
+      }
+    );
   }
   let status: Status = await getStatus(message.interactor.fid);
 
@@ -63,7 +80,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 }
 
 export async function GET(req: NextRequest): Promise<Response> {
-    console.log("GET status");
+  console.log("GET status");
   const { searchParams } = req.nextUrl;
   const fid = searchParams.get("fid");
 

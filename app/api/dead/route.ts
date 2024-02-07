@@ -1,15 +1,17 @@
 import { getFrameHtmlResponse } from "@coinbase/onchainkit";
+import { NeynarAPIClient } from "@neynar/nodejs-sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { NEXT_PUBLIC_URL } from "../../config";
-import { Status, extractUser, getStatus } from "../status/getStatus";
-import { curse } from "../infected/infect";
 import { MAX_CURSES } from "../../consts";
+import { curse } from "../../db";
+import { getFidsFromInput } from "../../utils";
+import { Status, extractUser, getStatus } from "../status/getStatus";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest): Promise<Response> {
+  const client = new NeynarAPIClient(process.env.NEYNAR_KEY!);
   // authenticate the user
   let message = await extractUser(req);
-  console.log("message", message);
   let cursed: number[] = [];
   if (!message || !message.valid) {
     console.log("Unauthorized", { status: 401 });
@@ -18,22 +20,9 @@ export async function POST(req: NextRequest): Promise<Response> {
     if (status !== Status.Dead) {
       console.log("Invalid request, not dead can't curse", { status: 400 });
     } else {
-      let targets = message.input
-        .split(",")
-        .map((input) => {
-          let fid = parseInt(input.trim());
-          console.log("FID", fid);
-          // TODO: try to parse if they provide fname
-          // if (isNaN(fid)) {
-          //   // if input is not a number, try to parse it as fname
-          //   fid = parseFnameToId(input);
-          // }
-          return fid;
-        })
-        .filter((fid) => !isNaN(fid) && fid !== message!.interactor.fid)
-        .slice(0, MAX_CURSES);
-
-      cursed = await curse(message.interactor.fid, targets);
+      let targets = await getFidsFromInput(client, message.input, MAX_CURSES);
+      let notSelf = targets.filter((fid) => fid !== message!.interactor.fid);
+      cursed = await curse(message.interactor.fid, notSelf);
     }
   }
   console.log("cursed", cursed);

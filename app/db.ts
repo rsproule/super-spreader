@@ -2,17 +2,17 @@ import { kv } from "@vercel/kv";
 import {
   CURSE_COUNT_KEY,
   CURSE_KEY,
-  HEAL_KEY,
+  DEATH_TIME,
   HEAL_COUNT_KEY,
+  HEAL_KEY,
   HEAL_POINT_CLAIMED_KEY,
+  HEAL_POINT_CLAIMED_KEY_TIME,
   HEAL_POINT_TIME,
   INFECTION_COUNT_KEY,
   INFECTION_KEY,
   MAX_CURSES,
   MAX_INFECTIONS,
-  DEATH_TIME,
-  HEAL_POINT_CLAIMED_KEY_TIME,
-} from "../../consts";
+} from "./consts";
 
 export async function infect(from: number, to: number[]): Promise<number[]> {
   let infected: number[] = [];
