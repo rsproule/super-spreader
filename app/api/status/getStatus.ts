@@ -1,12 +1,11 @@
-import { kv } from "@vercel/kv";
 import {
   FrameRequest,
   FrameValidationData,
   getFrameMessage,
 } from "@coinbase/onchainkit";
 import { NextRequest } from "next/server";
-import { getInfectionTime } from "../infected/infect";
 import { DEATH_TIME } from "../../consts";
+import { getInfectionTime } from "../../db";
 
 export enum Status {
   Infected = "infected",

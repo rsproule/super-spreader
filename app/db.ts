@@ -2,17 +2,17 @@ import { kv } from "@vercel/kv";
 import {
   CURSE_COUNT_KEY,
   CURSE_KEY,
-  HEAL_KEY,
+  DEATH_TIME,
   HEAL_COUNT_KEY,
+  HEAL_KEY,
   HEAL_POINT_CLAIMED_KEY,
+  HEAL_POINT_CLAIMED_KEY_TIME,
   HEAL_POINT_TIME,
   INFECTION_COUNT_KEY,
   INFECTION_KEY,
   MAX_CURSES,
   MAX_INFECTIONS,
-  DEATH_TIME,
-  HEAL_POINT_CLAIMED_KEY_TIME,
-} from "../../consts";
+} from "./consts";
 
 export async function infect(from: number, to: number[]): Promise<number[]> {
   let infected: number[] = [];
@@ -29,10 +29,10 @@ export async function infect(from: number, to: number[]): Promise<number[]> {
     }
     // how many people have they infected
     let infectedCount = await kv.get(`${INFECTION_COUNT_KEY}:${from}`);
-    await kv.incr(`infect_count:${from}`);
-    if (infectedCount && Number(infectedCount) > MAX_INFECTIONS) {
+    if (infectedCount && Number(infectedCount) >= MAX_INFECTIONS) {
       break;
     }
+    await kv.incr(`infect_count:${from}`);
 
     // when was the person infected
     await kv.set(`${INFECTION_KEY}:${target}`, Date.now().toString());

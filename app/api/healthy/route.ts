@@ -1,54 +1,21 @@
-import { getFrameHtmlResponse } from "@coinbase/onchainkit";
+import {
+  FrameValidationData,
+  getFrameHtmlResponse,
+} from "@coinbase/onchainkit";
+import { NeynarAPIClient } from "@neynar/nodejs-sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { NEXT_PUBLIC_URL } from "../../config";
+import { farmHealPoint, heal } from "../../db";
+import { getFidsFromInput } from "../../utils";
 import { Status, extractUser, getStatus } from "../status/getStatus";
-import { farmHealPoint, heal } from "../infected/infect";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest): Promise<Response> {
   // authenticate the user
+  const client = new NeynarAPIClient(process.env.NEYNAR_KEY!);
   let message = await extractUser(req);
-  let healed: number[] = [];
-  let healPoints: number = 0;
-  let isHealth: boolean = false;
+  let imageFile = await getResultImage(client, message);
 
-  if (!message || !message.valid) {
-    console.log("Unauthorized", { status: 401 });
-  } else {
-    let status = await getStatus(message.interactor.fid);
-    if (status !== Status.Healthy) {
-      console.log("Invalid request, not healthy", { status: 400 });
-    } else {
-      if (message.button === 1) {
-        // try to farm a heal point
-        if (
-          (message.liked && message.following && message.recasted) ||
-          message.interactor.fid === message.raw.action.cast.author.fid
-        ) {
-          healPoints = await farmHealPoint(message.interactor.fid);
-        }
-      } else {
-        isHealth = true;
-        let targets = message.input
-          .split(",")
-          .map((input) => {
-            let fid = parseInt(input.trim());
-            // TODO: try to parse if they provide fname
-            return fid;
-          })
-          .filter((fid) => !isNaN(fid) && fid !== message!.interactor.fid)
-          .slice(0, 100);
-        healed = await heal(message.interactor.fid, targets);
-      }
-    }
-  }
-  let imageFile = isHealth
-    ? healed.length > 0
-      ? "heal"
-      : "heal-failed"
-    : healPoints > 0
-      ? "hp-farm"
-      : "hp-farm-failed";
   // at the end we might want to go to a new page or just stay here
   let frame = getFrameHtmlResponse({
     buttons: [
@@ -66,3 +33,39 @@ export async function POST(req: NextRequest): Promise<Response> {
   });
 }
 export const GET = POST;
+
+type HealFrameResponse = "heal" | "heal-failed" | "hp-farm" | "hp-farm-failed";
+
+async function getResultImage(
+  client: NeynarAPIClient,
+  message: FrameValidationData | undefined
+): Promise<HealFrameResponse> {
+  if (!message || !message.valid) {
+    console.log("Unauthorized", { status: 401 });
+    return "heal-failed";
+  }
+
+  let status = await getStatus(message.interactor.fid);
+  if (status !== Status.Healthy) {
+    console.log("Invalid request, not healthy", { status: 400 });
+    return "heal-failed";
+  }
+
+  if (message.button === 1) {
+    // try to farm a heal point
+    if (
+      (message.liked && message.following && message.recasted) ||
+      message.interactor.fid === message.raw.action.cast.author.fid
+    ) {
+      let healPoints = await farmHealPoint(message.interactor.fid);
+      return healPoints > 0 ? "hp-farm" : "hp-farm-failed";
+    }
+  } else {
+    let targets = await getFidsFromInput(client, message.input, 100);
+    let notSelf = targets.filter((fid) => fid !== message!.interactor.fid);
+    let healed = await heal(message.interactor.fid, notSelf);
+    return healed.length > 0 ? "heal" : "heal-failed";
+  }
+
+  return "heal-failed";
+}
