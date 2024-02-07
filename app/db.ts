@@ -29,10 +29,10 @@ export async function infect(from: number, to: number[]): Promise<number[]> {
     }
     // how many people have they infected
     let infectedCount = await kv.get(`${INFECTION_COUNT_KEY}:${from}`);
-    await kv.incr(`infect_count:${from}`);
-    if (infectedCount && Number(infectedCount) > MAX_INFECTIONS) {
+    if (infectedCount && Number(infectedCount) >= MAX_INFECTIONS) {
       break;
     }
+    await kv.incr(`infect_count:${from}`);
 
     // when was the person infected
     await kv.set(`${INFECTION_KEY}:${target}`, Date.now().toString());

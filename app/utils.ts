@@ -91,5 +91,5 @@ export async function getTweetFromFidsString(
   );
   let usernames = res.users.map((user) => "@" + user.username);
 
-  return `I just ${action} ${usernames.join(" ")}!`;
+  return `I just ${action} ${usernames.join(" ")}`;
 }

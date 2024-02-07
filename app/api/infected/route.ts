@@ -9,6 +9,7 @@ import { MAX_INFECTIONS } from "../../consts";
 import { infect } from "../../db";
 import { getFidsFromInput, getHealthyFollowerForUser } from "../../utils";
 import { Status, extractUser, getStatus } from "../status/getStatus";
+import { FrameButtonMetadata } from "@coinbase/onchainkit/dist/types/core/types";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest): Promise<Response> {
@@ -18,14 +19,22 @@ export async function POST(req: NextRequest): Promise<Response> {
   let { image, infected } = await getResultImage(client, message);
 
   // at the end we might want to go to a new page or just stay here
+  let buttons: [FrameButtonMetadata, ...FrameButtonMetadata[]] = [
+    {
+      label: `Get Status`,
+      action: "post",
+    } as FrameButtonMetadata,
+    { label: "View Stats", action: "post_redirect" } as FrameButtonMetadata,
+  ];
+
+  if (infected.length > 0) {
+    buttons.push({
+      label: "Notify infected!",
+      action: "post_redirect",
+    } as FrameButtonMetadata);
+  }
   let frame = getFrameHtmlResponse({
-    buttons: [
-      {
-        label: `Get Status`,
-      },
-      { label: "View Stats", action: "post_redirect" },
-      { label: "Notify those infected!" },
-    ],
+    buttons: buttons,
     image: `${NEXT_PUBLIC_URL}/${image}.png`,
     post_url:
       infected && infected.length > 0
@@ -70,15 +79,15 @@ async function getResultImage(
   }
 
   if (message.button === 2) {
+    // const num = parseInt(message.input);
     targets = await getHealthyFollowerForUser(
       client,
       message.interactor.fid,
-      MAX_INFECTIONS
+      10
     );
   }
   let notSelfTargets = targets.filter((fid) => fid !== message!.interactor.fid);
   let infected = await infect(message.interactor.fid, notSelfTargets);
-
   if (infected.length > 0) {
     return { image: "infect", infected: infected };
   }

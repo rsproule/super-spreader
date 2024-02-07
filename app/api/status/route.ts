@@ -17,7 +17,7 @@ function getButtons(
     case Status.Infected:
       return [
         { label: "Infect these users ⬆️" },
-        { label: "Infect 50 followers" },
+        { label: "Infect 10 followers" },
       ];
     case Status.Dead:
       return [{ label: "Curse!" }];
@@ -57,9 +57,10 @@ export async function POST(req: NextRequest): Promise<Response> {
     });
   }
   if (message.button === 3) {
+    console.log("redirect to cast");
     let tweet = await getTweetFromFidsString(client, fids!, "infected");
     return NextResponse.redirect(
-      `https://warpcast.com/~/compose?text=${encodeURIComponent(tweet)}`,
+      `https://warpcast.com/~/compose?text=${encodeURIComponent(tweet)}&embeds[]=${NEXT_PUBLIC_URL}`,
       {
         status: 302,
       }
