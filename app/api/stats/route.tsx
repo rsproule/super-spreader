@@ -9,8 +9,9 @@ export async function GET(req: NextRequest) {
   const action = searchParams.get("action");
   let timeline = await getTimeline(action, fromFid, toFid);
   let counts = await getCounts(action, fromFid);
-  console.log({ timeline, counts })
-  return NextResponse.json({ timeline, counts });
+  let infected = await getInfected();
+  console.log({ timeline, counts });
+  return NextResponse.json({ timeline, counts, infected });
 }
 
 async function getCounts(actionType: string | null, fromFid: string | null) {
@@ -35,6 +36,24 @@ async function getCounts(actionType: string | null, fromFid: string | null) {
       count: counts[i],
     };
   });
+}
+
+async function getInfected() {
+  let cursor = 0;
+  let infections = [];
+  do {
+    const res = await kv.scan(cursor, {
+      match: `${INFECTION_KEY}:*`,
+      count: 2500,
+    });
+    cursor = res[0];
+    infections.push(...res[1]);
+  } while (cursor !== 0);
+
+  if (infections.length === 0) {
+    return [];
+  }
+  return infections.filter((infection) => infection.split(":").length < 3);
 }
 
 async function getTimeline(

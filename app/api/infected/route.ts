@@ -9,7 +9,6 @@ export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest): Promise<Response> {
   // authenticate the user
   let message = await extractUser(req);
-  console.log("message", message);
   let infected: number[] = [];
   if (!message || !message.valid) {
     console.log("Unauthorized", { status: 401 });

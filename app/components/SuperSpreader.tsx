@@ -63,57 +63,7 @@ export function SuperSpreader() {
           {showRules ? "Hide Rules" : "Show Rules"}
         </button>
 
-        {showRules && (
-          <div
-            style={{
-              borderTop: "1px solid black",
-              width: "60%",
-              margin: "10px",
-            }}
-          >
-            <h1>Super Spreader</h1>
-            <p>
-              A super spreader virtual virus has broken out on Farcaster! Will
-              the community be able to band together to survive or will the
-              virus win!
-            </p>
-            <p>
-              Super spreader uses the farcaster frame feature to allow users to
-              interact with the game without ever leaving the comfort of their
-              farcaster client.
-            </p>
-            <h2>How to Play</h2>
-            <h3>There are 3 states</h3>
-            <ul>
-              <li>healthy</li>
-              <li>infected</li>
-              <li>dead</li>
-            </ul>
-            <h3>There are a few actions you can take from each</h3>
-            <h4>healthy</h4>
-            <ul>
-              <li>
-                claim hp: claim a health point that you can use to rescue the
-                infected
-              </li>
-              <li>
-                cure: cure an infected from their disease (costs 1 hp, must be
-                following, liked and recasted)
-              </li>
-            </ul>
-            <h4>infected</h4>
-            <ul>
-              <li>infect: infect another farcaster user: limit 50</li>
-            </ul>
-            <h4>dead</h4>
-            <ul>
-              <li>
-                curse: curse another player: (limit 10) makes the other player
-                inert, no cure or infect
-              </li>
-            </ul>
-          </div>
-        )}
+        {showRules && <Rules />}
       </>
       <input
         type="number"
@@ -184,6 +134,7 @@ export function SuperSpreader() {
           <h3>Stats</h3>
           {stats && stats && stats.counts && (
             <>
+              {infectedTable(stats.infected)}
               {getCountTable(stats.counts, INFECTION_COUNT_KEY)}
               {getCountTable(stats.counts, CURSE_COUNT_KEY)}
               {getCountTable(stats.counts, HEAL_COUNT_KEY)}
@@ -193,6 +144,32 @@ export function SuperSpreader() {
         </div>
       </div>
     </div>
+  );
+}
+
+function infectedTable(infected: any) {
+  return (
+    <>
+      <h4>🦠Total currently infected: {infected.length}🦠</h4>
+      <table style={{ borderCollapse: "collapse" }}>
+        <thead>
+          <tr>
+            <th style={{ border: "1px solid black", padding: "5px" }}>
+              Infected User
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {infected.map((infectedUser: any, index: number) => (
+            <tr key={index}>
+              <td style={{ border: "1px solid black", padding: "5px" }}>
+                <UserDetails fid={Number(infectedUser.split(":")[1])} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }
 
@@ -242,7 +219,7 @@ function UserDetails({ fid }: { fid: number }) {
   useEffect(() => {
     const getUser = async () => {
       let res = await fetch("/api/user?fid=" + fid, {
-        next: { revalidate: 1800 },
+        next: { revalidate: 86400 },
       });
       const user = await res.json();
       setUser(user.user);
@@ -257,5 +234,57 @@ function UserDetails({ fid }: { fid: number }) {
     </a>
   ) : (
     fid
+  );
+}
+
+function Rules() {
+  return (
+    <div
+      style={{
+        borderTop: "1px solid black",
+        width: "60%",
+        margin: "10px",
+      }}
+    >
+      <h1>Super Spreader</h1>
+      <p>
+        A super spreader virtual virus has broken out on Farcaster! Will the
+        community be able to band together to survive or will the virus win!
+      </p>
+      <p>
+        Super spreader uses the farcaster frame feature to allow users to
+        interact with the game without ever leaving the comfort of their
+        farcaster client.
+      </p>
+      <h2>How to Play</h2>
+      <h3>There are 3 states</h3>
+      <ul>
+        <li>healthy</li>
+        <li>infected</li>
+        <li>dead</li>
+      </ul>
+      <h3>There are a few actions you can take from each</h3>
+      <h4>healthy</h4>
+      <ul>
+        <li>
+          claim hp: claim a health point that you can use to rescue the infected
+        </li>
+        <li>
+          cure: cure an infected from their disease (costs 1 hp, must be
+          following, liked and recasted)
+        </li>
+      </ul>
+      <h4>infected</h4>
+      <ul>
+        <li>infect: infect another farcaster user: limit 50</li>
+      </ul>
+      <h4>dead</h4>
+      <ul>
+        <li>
+          curse: curse another player: (limit 10) makes the other player inert,
+          no cure or infect
+        </li>
+      </ul>
+    </div>
   );
 }
