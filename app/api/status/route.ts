@@ -4,7 +4,7 @@ import {
   FrameInputMetadata,
 } from "@coinbase/onchainkit/dist/types/core/types";
 import { NextRequest, NextResponse } from "next/server";
-import { NEXT_PUBLIC_URL } from "../../config";
+import { NEXT_PUBLIC_URL, WARP_URL } from "../../config";
 import { Status, extractUser, getStatus } from "./getStatus";
 import { getTweetFromFidsString } from "../../utils";
 import { NeynarAPIClient } from "@neynar/nodejs-sdk";
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     console.log("redirect to cast");
     let tweet = await getTweetFromFidsString(client, fids!, "infected");
     return NextResponse.redirect(
-      `https://warpcast.com/~/compose?text=${encodeURIComponent(tweet)}&embeds[]=${NEXT_PUBLIC_URL}`,
+      `https://warpcast.com/~/compose?text=${encodeURIComponent(tweet)}&embeds[]=${WARP_URL}`,
       {
         status: 302,
       }
