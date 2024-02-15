@@ -1,5 +1,7 @@
 # Super Spreader
 
+Play it here: https://warpcast.com/rfs/0xb9f8a64f
+
 A super spreader virtual virus has broken out on Farcaster! Will the community be able to band together to survive or will the virus win!
 
 Super spreader uses the farcaster frame feature to allow users to interact with the game without ever leaving the comfort of their farcaster client.
